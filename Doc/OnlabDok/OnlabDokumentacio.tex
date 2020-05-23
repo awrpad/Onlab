@@ -1,4 +1,4 @@
-\documentclass[a4paper]{article}
+\documentclass[12pt,a4paper]{article}
 
 \frenchspacing
 \sloppy
@@ -6,6 +6,14 @@
 \usepackage[utf8]{inputenc}
 \usepackage{t1enc}
 \usepackage[magyar]{babel}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=blue,
+}
+\urlstyle{same}
 %\usepackage{blindtext}
 
 \title{Önálló laboratórium dokumentáció}
@@ -15,6 +23,20 @@
 \begin{document}
   \maketitle
 
-  Ez vlami szöveg.
+  \section{Bevezetés}
+    Ez a dokumentum tartalmazza az önálló laboratórium tárgy keretében elvégzett munkám dokumentációját.
+    %TODO: Általános leírás arról, amit csináltunk
+
+    A munka rám háruló része két felé osztható: az első részben feladatom volt egy bizonyos ESP32 lapka megismerése és lehetőségeinek felderítése. A második részben pedig egy, a későbbiekben diagnosztikai eszközként használandó mikrofonnal foglalkoztam.
+
+    \textbf{Megjegyzés:} A laboratórium során létrejött forráskódok \href{https://github.com/awrpad/Onlab}{ezen} a GitHub repositoryn elérhetőek.
+
+  \newpage
+
+  \section{``Nagykijelzős'' ESP32}
+    Mint azt a bevezetőben említettem, lorem ipsum...
+
+  \section{Mikrofon és spektrumanalizátor}
+    Ahogy...
 
 \end{document}
