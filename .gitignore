@@ -1,0 +1,11 @@
+# Object file
+*.o
+
+# VS Files
+*.vcxproj
+*.filters
+*.user
+
+# Unneccesary tex output
+*.aux
+*.log
