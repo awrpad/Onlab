@@ -9,3 +9,4 @@
 # Unneccesary tex output
 *.aux
 *.log
+*.out
