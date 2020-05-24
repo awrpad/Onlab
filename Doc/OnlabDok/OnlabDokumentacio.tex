@@ -7,6 +7,7 @@
 \usepackage{t1enc}
 \usepackage[magyar]{babel}
 \usepackage{hyperref}
+\usepackage[dvipsnames]{xcolor}
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
@@ -16,6 +17,7 @@
 \urlstyle{same}
 %\usepackage{blindtext}
 
+
 \title{Önálló laboratórium dokumentáció}
 \author{Wágner Árpád (O2OFFX)}
 \date{2019/20 - 2. félév}
@@ -24,17 +26,28 @@
   \maketitle
 
   \section{Bevezetés}
+
     Ez a dokumentum tartalmazza az önálló laboratórium tárgy keretében elvégzett munkám dokumentációját.
     %TODO: Általános leírás arról, amit csináltunk
 
     A munka rám háruló része két felé osztható: az első részben feladatom volt egy bizonyos ESP32 lapka megismerése és lehetőségeinek felderítése. A második részben pedig egy, a későbbiekben diagnosztikai eszközként használandó mikrofonnal foglalkoztam.
 
-    \textbf{Megjegyzés:} A laboratórium során létrejött forráskódok \href{https://github.com/awrpad/Onlab}{ezen} a GitHub repositoryn elérhetőek.
+    \textbf{Megjegyzés:} A laboratórium során létrejött forráskódok \href{https://github.com/awrpad/Onlab}{ezen} a GitHub repository-n elérhetőek.
 
   \newpage
 
   \section{``Nagykijelzős'' ESP32}
-    Mint azt a bevezetőben említettem, lorem ipsum...
+
+    \subsection{Bevezetés}
+      Mint azt a bevezetőben említettem, a félév első részében egy ESP32-re épülő fejlesztői lapkával foglalkoztam.
+      Az ESP32 egy kedvező árú, de erős mikrokontroller-család, melyről érdemes tudni, hogy beépített Wi-Fi-vel és Bluetooth-szal rendelkezik. A szóban forgó eszköz ezen funkcionalitáson túl rendelkezik egy beépített MPU9250-el (giroszkóp, gyorsulásmérő, iránytű), SD kártya olvasóval, egy egyszerű hangszóróval és kijelzővel illetve három előlapi gombbal.
+
+      Az eszköz programzása Arduino IDE-n keresztül lehetséges, de az ESP32 alaplapkönyvtár hozzáadása szükséges (ennak a mikéntjéről például \href{https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/}{itt} található egy leírás). Ha ez megtörtént, az \texttt{Eszközök > Alaplap} menüpontnál a felkínált lehetőségek közül válasszuk az \texttt{ESP 32 Pico Kit}-et. Így a megírt programunkat már feltölthetjük az eszközre.
+
+    \subsection{Konklúzió}
+      Általánosan elmondható, hogy maga a fejlesztői eszköz hasznos és sokrétű. Különféle alkalmazásokban gyakran előforduló elemek találhatóak meg benne beépítve, ami fejlesztés során sok forrasztástól és kábelrengetegről kímélhet meg minket.
+      Azonban sajnálatos a megfelelő dokumentáció hiánya, így a vele történő korai munka nehézkes lehet, plusz szerintem a GPIO pinek elhelyezése sem optimális.
+      Azonban amint megismerkedtünk a lapkával a rendelkezésre álló mintakódok alapján, összességében egy sokrétűen és jól használható eszköz lesz a kezünkben.
 
   \section{Mikrofon és spektrumanalizátor}
     Ahogy...
