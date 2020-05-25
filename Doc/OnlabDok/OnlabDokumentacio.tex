@@ -8,6 +8,15 @@
 \usepackage[magyar]{babel}
 \usepackage{hyperref}
 \usepackage[dvipsnames]{xcolor}
+\usepackage{listings}
+\lstset{
+  language=C++,
+  basicstyle={\small\ttfamily},
+  keywordstyle=\color{blue},
+  stringstyle=\color{red},
+  backgroundcolor=\color{gray},
+  commentstyle=\color{green}
+}
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
@@ -16,7 +25,6 @@
 }
 \urlstyle{same}
 %\usepackage{blindtext}
-
 
 \title{Önálló laboratórium dokumentáció}
 \author{Wágner Árpád (O2OFFX)}
@@ -32,7 +40,7 @@
 
     A munka rám háruló része két felé osztható: az első részben feladatom volt egy bizonyos ESP32 lapka megismerése és lehetőségeinek felderítése. A második részben pedig egy, a későbbiekben diagnosztikai eszközként használandó mikrofonnal foglalkoztam.
 
-    \textbf{Megjegyzés:} A laboratórium során létrejött forráskódok \href{https://github.com/awrpad/Onlab}{ezen} a GitHub repository-n elérhetőek.
+    \textbf{Megjegyzés:} A laboratórium során létrejött forráskódok \href{https://github.com/awrpad/Onlab}{ezen}\footnote{A repository URL-je: \url{https://github.com/awrpad/Onlab}} a GitHub repository-n elérhetőek.
 
   \newpage
 
@@ -42,22 +50,47 @@
       Mint azt a bevezetőben említettem, a félév első részében egy ESP32-re épülő fejlesztői lapkával foglalkoztam.
       Az ESP32 egy kedvező árú, de erős mikrokontroller-család, melyről érdemes tudni, hogy beépített Wi-Fi-vel és Bluetooth-szal rendelkezik. A szóban forgó eszköz ezen funkcionalitáson túl rendelkezik egy beépített MPU9250-el (giroszkóp, gyorsulásmérő, iránytű), SD kártya olvasóval, egy egyszerű hangszóróval és kijelzővel illetve három előlapi gombbal.
 
-      Az eszköz programzása Arduino IDE-n keresztül lehetséges, de az ESP32 alaplapkönyvtár hozzáadása szükséges (ennak a mikéntjéről például \href{https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/}{itt} található egy leírás). Ha ez megtörtént, az \texttt{Eszközök > Alaplap} menüpontnál a felkínált lehetőségek közül válasszuk az \texttt{ESP 32 Pico Kit}-et. Így a megírt programunkat már feltölthetjük az eszközre.
+      Az eszköz programzása Arduino IDE-n keresztül lehetséges, de az ESP32 alaplapkönyvtár hozzáadása szükséges (ennak a mikéntjéről például \href{https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/}{itt}\footnote{Az útmutató URL-je: \url{https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/}} található egy leírás). Ha ez megtörtént, az \texttt{Eszközök > Alaplap} menüpontnál a felkínált lehetőségek közül válasszuk az \texttt{ESP 32 Pico Kit}-et. Így a megírt programunkat már feltölthetjük az eszközre.
 
     \subsection{Tapasztalatok}
-      \subsubsection{Kijelző}
-      A ... könyvtárat érdemes használni...
+      Elöljáróban szeretném megjegyezni, hogy a következőkben megemlített könyvtárak használatához szükséges egyes dolgokat beállítani az eszköz sajátosságainak figyelembevételével, ilyen beállítások a bevezetőben említett GitHub repository-ban lévő \texttt{sound2.ino}\footnote{A fájl URL-je: \url{https://github.com/awrpad/Onlab/blob/master/Arduino\%2BESP/src/sound2/sound2.ino}} fájlban találhatóak. Ebben a fájlban az itt ismertetett funkciók nagyrésze is megtalálható.
 
-      \subsubsection{Hangszóró}
-      A ... könytár...
+      A tapasztalatok részletesebb leírását a \textbf{kijelző}vel\footnote{A kijelzőt a használat előtt inicializálni kell, mely megtehető ezzel a kódsorral: \texttt{Adafruit\_ST7735 tft = Adafruit\_ST7735(16, 17, 23, 5, 9);}} kezdeném, hisz ez talán az eszköz legérdekesebb pontja.
+      A kijelző használatához ajánlott egy már meglévő könyvtárat használni, én az Adafruit\_ST7735-öt\footnote{Adafruit\_ST7735: \url{https://github.com/adafruit/Adafruit-ST7735-Library} Az itt található fájlok közül a Adafruit\_ST7735.h fájlt ``inklúdoltam''.} használtam, ha ezt a könyvtárat az Arduino IDE-n keresztül telepítjük (\texttt{Eszközök > Könyvtárak kezelése... > \textit{\{könyvtár megkeresése a keresőben\}} > Telepítés}), automatikusan letölti az Adafruit\_GFX könyvtárat és minden egyebet, amikre ezek építenek.
+      Az első dolog ami a kijelző kapcsán eszünkbe juthat, hogy szeretnénk egy egységes színt beállítani. Ezt a \texttt{fillScreen()} metódussal valósítható meg. Ez egy argumentumot vár, mégpedig a színt, amivel ki szeretnénk tölteni a képernyőt. Ehhez a feljebb említett könyvtár tartalmaz színdefiníciókat, így a teljes utasítés nézhet ki például így: \texttt{tft.fillScreen(ST7735\_BLACK);}. Itt azonban meg kell jegyezni, hogy az itt definiált színek sajnos nem feltétlenül működnek tökéletesen. A ST7735\_CYAN használatával például a sárga színnel lesz kitöltve a képernyő (de a ST7735\_BLACK például a várt módon feketével teszi ugyanezt).
+      Az első képernyő átszínezés után észre fogjuk venni, hogy ez a metódus lassú. Szemre azt lehet mondani, hogy úgy egy másodperc környéki időt vesz igénybe. Nyilvánvaló, hogy ez a sebesség erősen korlátozza a modul felhasználhatóságát. Például, ha egy értéket szeretnénk rendszeresen frissítve megjeleníteni a képernyőn, a törlés és kiírás ideje könnyen lehet túlzottan lassú.
+      Az ilyen és ehhez hasonló helyzetek megoldására használhatjuk például a \texttt{fillRect()} metódust, mely egy megadott téglalapot a megadott színnel kitölt. Ilyen módon nem szükséges az egész kijelzőt frissítenünk, lehetséges csupán a megadott terület egy színnel való kitöltése. Ezt kombinálva például a \texttt{tft.print("uzenet")} metódussal aránylag gyorsan is képesek vagyunk változó értékeket a képernyőn megjeleníteni. Az egyetlen problémát az így létrejövő villódzás jelenti, de az értékek még ilyen módon is könnyen leolvashatóak maradnak (amint ez látszik akkor is, ha a fent említett vázlatot futtatjuk a panelen). Természetesen az így megjelenő szöveg színe illetve mérete is befolyásolgató a \texttt{tft.setTextSize(1)} illetve \texttt{tft.setTextColor(0x5FCC)} metódusokkal. Ha nem megfelelő a szöveg elhelyezése, kiiratás előtt a \texttt{tft.setCursor(0, 0)} metódussal a kurzort a képernyőn belül szabaddon bárhova elhelyezhetjük.
+      A kijelzőhöz kepcsolódóan érdemes még megjegyezni, hogy annak rotációját is beállíthatjuk. Ha ezt a kódban nem tesszük meg, alapértelmezés szerint ``portré'' módba lesz az eszköz orientációja beállítva (mint egy okostelefon: allul gombok, fellül a képernyő a hosszabb oldalakat bal/jobb oldalként használva). Ezt módosítani a \texttt{tft.setRotation(1)} metódussal lehet, ami például az itt használt 1-es értéket megkapva a kijelző tájkép orientációjú lesz, a gombokkal a jobb oldalon.
 
-      \subsubsection{SD kártya}
-      A ... könytár...
+      A másodikként bemutatásra kerülő funkció a \textbf{hangszóró}. Ennek a használatához először is szükség van egy könytárra, melyet a következőképp használhatunk: \texttt{\#include "esp32-hal-ledc.h"} (Figyelem! Az idézőjelek használata relációs jelek helyett nem véletlen, a megfelelő alaplap kiválasztása után ez a könyvtár így használatos). Hogy megfelelően használhassuk, a setup részben be kell állítani a hangszórót, ezt az \texttt{ledcSetup} illetve \texttt{ledcAttachPin} metódusok megfelelően paraméterezett hívásával tehetjük meg. A megfelelő paraméterek a mellékelt forráskódban megtalálhatóak.
+      A beállítás után az \texttt{ledcWriteTone(TONE\_PIN\_CHANNEL, 440)} metódushívással játszhatunk le hangot, első paraméterként a megfelelő (és beállításnál korábban már használt) csatornát, míg második paraméterként a lejátszani kívánt frekvenciát kell átadni Hz-ben (a példa tehát egy zenei A hangot fog lejátszani a hangszórón). A megadott hang lejátszása egészen addig folytatódik, amíg meg nem adunk egy újabb lejátszandó hangot. Ilyen módon ha nem akarjuk tovább játszani az addigi hangot, meghívhatjuk az imént említett metódust 0 frekvenciaértéket átadva. Mivel több ilyen hang egymás utáni lejátszása nagyon repetitív forráskódot eredményezne, ráadásul úgy, hogy egy paraméter mindig fix, írtam egy egyszerű függvényt \texttt{void playTone(int freq)} interfésszel, mely az átadott frekvenciát 200 miliszekundumig játsza le szálblokkoló módon.
+
+      A következő funkció a beépített \textbf{MPU9250} szenzor. Amint azt a bevezetőben is említettem, ennek a szenzornak három különböző funkcionalitása van:
+      \begin{itemize}
+        \item Giroszkóp
+        \item Gyorsulásmérő
+        \item Iránytű
+      \end{itemize}
+      Mint eddig, most is akkor lesz a legegyszerűbb a dolgunk, ha egy könyvtárat használunk. Ehhez a szenzorhoz több könyvtárat is lehet találni, melyek közül próbáltam többet is használni, nekem a \texttt{MPU9250\_asukiaaa}\footnote{A felhasznált könyvtár és dokumentációja elérhető itt: \url{https://github.com/asukiaaa/MPU9250\_asukiaaa}} elnevezésűt sikerült működésre bírnom, a többivel különböző problémáim adódtak.
+      %TODO: A library setupját leírni
+      Miután sikeresen beállítottunk mindent, a szenzort a következőképp használhatjuk: először a megfelelő \texttt{...Update} végződésű metódus hívásával frissítjük a szenzor megfelelő adatait, majd a \texttt{...<[X][Y][Z]>} alakú fügvénnyel kiolvassuk a kívánt adatot.
+      A következő kódrészlet például frissíti és kiolvassa a gyorsulásmérő szenzor adatait a három tengely mentén:
+      \begin{lstlisting}
+        // After setting up the MPU9250 and the screen
+        float aX, aY, aZ;
+
+        mpu.accelUpdate();
+        aX = mpu.accelX();
+        aY = mpu.accelY();
+        aZ = mpu.accelZ();
+      \end{lstlisting}
+      Hasonló módon kell dolgozni a giroszkóppal is (\texttt{gyro}) és az iránytűvel (\texttt{mag}) is.
+
 
     \subsection{Konklúzió}
       Általánosan elmondható, hogy maga a fejlesztői eszköz hasznos és sokrétű. Különféle alkalmazásokban gyakran előforduló elemek találhatóak meg benne beépítve, ami fejlesztés során sok forrasztástól és kábelrengetegről kímélhet meg minket.
       Azonban sajnálatos a megfelelő dokumentáció hiánya, így a vele történő korai munka nehézkes lehet, plusz szerintem a GPIO pinek elhelyezése sem optimális.
-      Azonban amint megismerkedtünk a lapkával a rendelkezésre álló mintakódok alapján, összességében egy sokrétűen és jól használható eszköz lesz a kezünkben.
+      Azonban amint megismerkedtünk a lapkával a rendelkezésre álló mintakódok alapján, ha tisztában vagyunk a korlátaival, összességében egy sokrétűen és jól használható eszköz lesz a kezünkben.
 
   \section{Mikrofon és spektrumanalizátor}
     Ahogy...

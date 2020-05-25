@@ -6,7 +6,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
 #include <MPU9250_asukiaaa.h>
-#include "esp32-hal-ledc.h"
+//#include "esp32-hal-ledc.h"
 #include <Wire.h>
 
 Adafruit_ST7735 tft = Adafruit_ST7735(16, 17, 23, 5, 9);
@@ -18,9 +18,10 @@ void setup() {
   pinMode(27,INPUT);
   digitalWrite(27,HIGH);
   tft.initR(INITR_18GREENTAB);
-  tft.fillScreen(ST7735_BLACK);
+  tft.fillScreen(ST7735_CYAN);
   tft.setTextColor(0x5FCC);
-  tft.setRotation(1);
+  tft.setTextSize(1);
+  //tft.setRotation(1);
   tft.setCursor(0, 0);
   tft.print("setup.");
   delay(350);
