@@ -24,7 +24,6 @@
     urlcolor=blue,
 }
 \urlstyle{same}
-%\usepackage{blindtext}
 
 \title{Önálló laboratórium dokumentáció}
 \author{Wágner Árpád (O2OFFX)}
@@ -109,6 +108,20 @@
     \subsection{Adatok beolvasása}
       Amint az előző részben említettem, a mikrofon adatait analóg módon lehet beolvasni például egy Arduino lapkával. Mivel az adatokat egyesével átküldeni eléggé pazarló és lassú lenne, így azt a megoldást választottuk, hogy először magán az Arduinon beolvasunk és eltárolunk valamennyi adatot, majd ezeket egy csomagként küldjük át a Raspberry-re. Végül az 500 darab beolvasott érték / csomag méretet választottam, mert ez még kényelmesen elfért az Arduino UNO memóriájában (míg például 1000 darab már nem fért volna be). Egy ötlet lehetne, hogy az \texttt{int} típus helyett \texttt{short} típust használjunk, azonban ezen az Arduino típuson ez nem jelentene különbséget \footnote{Vesd össze: \url{https://www.arduino.cc/reference/en/language/variables/data-types/int/} és \url{https://www.arduino.cc/reference/en/language/variables/data-types/short/}}. Azonban az ennél kisebb, egy bájtos típus mérete pedig nem lenne elég, hiszen az \texttt{AnalogRead()} függvény által visszaadott értékek 10 bitesek.
 
+    \subsection{Kommunikáció}
+      Természtesen az Arduino-n beolvasott adatokat valamilyen módon továbbítani kell a Raspberry-re. Adja magát a módszer, hogy a két eszközt USB-n keresztül kössük össze, úgyhogy én is ezt tettem.
+
+      Több próbálkozás helytelen módon működő kommunikáció után arra jutottam, hogy az eszközök kommunikációjához mindenképpen szükség lesz egyfajta protokolra. Ebben a protokolban meghatároztam a küldött csomag felépítését és a küldés módját. A küldött csomag a következőképp épül fel:
+      \begin{itemize}
+        \item -1 : Egy fix érték, ami a csomag elejét jelzi
+        \item Az 500 beolvasott adat (időben a legelső beolvasottal legelől)
+        \item Az adatok beolvasására felhasznált idő miliszekundumban
+        \item -3 : Egy újab fix érték, ami a csomag végét jelzi.
+      \end{itemize}
+      A küldés módjában a következőket határoztam meg: Az adatok továbbítása USB-n történik (Arduino-ban \texttt{Serial.println()}). A fogadónak jeleznie kell, ha készen áll az adatok fogadására. Ezt az Arduino egy előre meghatározott pin-jére írt logikai magas értékkel teheti meg. Adatok akkor és csak akkor lesznek küldve, ha a fogadási szándékot jelezték.
+      Ezen szabályok betartásával biztosítható lett, hogy az adatok egyértelműen kiolvashatók legyenek és hogy azok a lehető leghamarabb rendelkezésre álljanak a küldéshez. Amíg ez a protokol nem létezett, lehetséges volt, hogy például egy tömb közepén kezdjen el olvasni a Raspberry, ami nem megengedhető, hiszen szükséges átküldeni a beolvasás időhosszát is. De az is előfordult, hogy az Arduino olyan adatok átküldésével foglalkozott, amikot végül nem is használt fel a Raspberry-n futó program, így feleslegesen töltött el időt a lassú adattranszferrel, ahelyett, hogy a gyors beolvasással foglalkozott volna. Így a ténylegesen felhasznált adatok késleltetése nőtt.
+
+      A két eszköz kommunikációja ebben a megvalósításban bár biztos és aránylag hatékony, azért lehetne még rajta fejleszteni. Az USB-n keresztül történő kommunikáció \texttt{Serial.println()} használatával például nagyon pazarló. Ilyen módon ugyanis sztringként történik az adatátvitel, tehát a számokat előbb át kell alakítani ilyen adattípussá, majd vissza számmá, ez nagy overhead-et jelenthet. Természetesen a baud rate emelésével gyorsíthatjuk a kommunikációt, de érdemes lehetne például kipróbálni, hogy milyen sebességnövekedést tudunk elérni, ha az Arduino és a Raspberry lábait kötjük össze \textbf{Figyelem!} Ha ezt a megoldást használjuk, elővigyázatosnak kell lennünk, ugyanis az Arduino UNO és a Raspberry Pi más jelszinten működik (5V illetve 3.3V), ilyen módon a közbetlen összeköttetés tönkre teheti a Raspberry-t, mivel az van kisebb feszültségre tervezve (és nem mellesleg ez nagyságrendekkel drágább is). Erre megoldást jelenthet az UNO helyett egy másik eszköz használata (például valamelyik ESP, hiszen azok is 3.3 Volttal működnek, de vannak már ilyen jelszintű Arduino-k is), vagy használhatunk egy jelszintillesztő áramkört is.
 
 
 \end{document}
