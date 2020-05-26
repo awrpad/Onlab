@@ -72,7 +72,11 @@
         \item Iránytű
       \end{itemize}
       Mint eddig, most is akkor lesz a legegyszerűbb a dolgunk, ha egy könyvtárat használunk. Ehhez a szenzorhoz több könyvtárat is lehet találni, melyek közül próbáltam többet is használni, nekem a \texttt{MPU9250\_asukiaaa}\footnote{A felhasznált könyvtár és dokumentációja elérhető itt: \url{https://github.com/asukiaaa/MPU9250\_asukiaaa}} elnevezésűt sikerült működésre bírnom, a többivel különböző problémáim adódtak.
-      %TODO: A library setupját leírni
+      Az MPU9250 használatához ezen kívül szükség van a \texttt{Wire.h} könyvtárra is, aminek beállítása szintúgy szükséges. Ezt a \texttt{Wire.begin(SDA\_PIN, SCL\_PIN);} kódsorral tehetjük meg\footnote{Amint az a fájlban is látható, az SDA\_PIN értéke 19, míg az SCL\_PIN konstanst 18-ra kell állítani.}. Amint ezekkel a beálításokkal elkészültünk, a szenzor könyvtárát ``össze kell kötni'' a Wire library-vel, ezt a következőképp lehet: \texttt{mpu.setWire(\&Wire);}. Továbbá szükséges még a használni kívánt funkciók inicializálása, amit a \texttt{begin...} alakú metódushívásokkal tehetünk meg. A következő kódrészlet például megteszi ezt a gyorsulásmérővel és az iránytűvel:
+      \begin{lstlisting}
+        mpu.beginAccel();
+        mpu.beginMag();
+      \end{lstlisting}
       Miután sikeresen beállítottunk mindent, a szenzort a következőképp használhatjuk: először a megfelelő \texttt{...Update} végződésű metódus hívásával frissítjük a szenzor megfelelő adatait, majd a \texttt{...<[X][Y][Z]>} alakú fügvénnyel kiolvassuk a kívánt adatot.
       A következő kódrészlet például frissíti és kiolvassa a gyorsulásmérő szenzor adatait a három tengely mentén:
       \begin{lstlisting}
@@ -86,6 +90,7 @@
       \end{lstlisting}
       Hasonló módon kell dolgozni a giroszkóppal is (\texttt{gyro}) és az iránytűvel (\texttt{mag}) is.
 
+      Hátra van még az \textbf{SD kártya foglalat} bemutatása\footnote{Ennek a résznek a mintakódja nem a korábban említett fájlban, hanem a \url{https://github.com/awrpad/Onlab/blob/master/Arduino\%2BESP/src/espsd/espsd.ino}-ban található.}. Ahogy eddig, most is érdemes egy könyvtárat használni. A lapka dokumentációja alapján a \texttt{mySD.h} fájl használata javasolt, azonban ezt telepítenünk kell. Ráadásul sajnos nem lehetséges a szokásos módon a ``Könyvtárak kezelése'' menüpontnál importálni, hanem le kell tölteni GitHub-ról: \url{https://github.com/nhatuan84/esp32-micro-sdcard}. Itt töltsük le az egész repository-t ZIP állományként, ezután az Arduino IDE-ben: \texttt{Vázlat > Könyvtár tartalmazása... > .ZIP könyvtár hozzáadása... > \textit{{válasszuk ki a letöltött ZIP fájlt}} > Open}. Ezzel a fejlesztőkörnyezet megcsinál minden szükséges lépést és innentől kezdve a könyvtárat használhatjuk a vázlatainkhoz. Ebben az esetben is az inicializálással kell kezdeni, amelyet jelen esetben a \texttt{SD.begin(13, 15, 2, 14)}\footnote{A megadott számok ezen esetben nem példák, a felhasznált modulhoz pontosan ezek az értékek kellenek. Más eszköz használata esetén természetesen ezek változhatnak.} fügvényhívással tehetünk meg. Mely tájékoztat is minket a sikrességről: ha sikerült az SD modul inicializálása, \texttt{true} értékkel tér vissza, különben \texttt{false}-al.
 
     \subsection{Konklúzió}
       Általánosan elmondható, hogy maga a fejlesztői eszköz hasznos és sokrétű. Különféle alkalmazásokban gyakran előforduló elemek találhatóak meg benne beépítve, ami fejlesztés során sok forrasztástól és kábelrengetegről kímélhet meg minket.
@@ -93,6 +98,11 @@
       Azonban amint megismerkedtünk a lapkával a rendelkezésre álló mintakódok alapján, ha tisztában vagyunk a korlátaival, összességében egy sokrétűen és jól használható eszköz lesz a kezünkben.
 
   \section{Mikrofon és spektrumanalizátor}
-    Ahogy...
+    \subsection{Bevezetés}
+      A félév során a másik nagyobb feladatom egy mikrofon modul használata volt, illetve egy az így beolvasott hangok folyamatos elemzésére alkalmas szoftver készítése.
+
+    \subsection{A mikrofon modul}
+      Ez a modul egy egyszerű eszköz, melynek csupán három lába van, ebből egy kell a 3.3 vagy 5 Voltnak, egy a földelésnek, a maradék egy lábon pedig a beolvasott értékeket kaphatjuk meg analóg módon. Ebből fakadóan csak olyan eszközzel használható közvetlenül, melyben van beépített A/D konverter (így például egy Raspberry Pi önmagában nem elég). Viszont egy ilyen miniszámítógép teljesítményére szükségünk van az adatok feldolgozásához, ennek áthidalására természetesen használhatunk egy külső analóg-digitális átalakítót, én azonban azt a megoldást úgy oldottam meg, hogy az adatokat egy Arduino UNO segítségével olvastam be és onnan továbbítottam a Raspberry felé.
+
 
 \end{document}

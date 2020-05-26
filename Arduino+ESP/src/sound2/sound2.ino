@@ -6,7 +6,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
 #include <MPU9250_asukiaaa.h>
-//#include "esp32-hal-ledc.h"
+#include "esp32-hal-ledc.h"
 #include <Wire.h>
 
 Adafruit_ST7735 tft = Adafruit_ST7735(16, 17, 23, 5, 9);
